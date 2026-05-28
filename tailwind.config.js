@@ -3,6 +3,22 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        laptop: '1440px',
+        desktop: '1728px',
+        wide: '1920px',
+        ultrawide: '2560px',
+      },
+      maxWidth: {
+        app: '90rem',
+        'app-lg': '96rem',
+        'app-xl': '104rem',
+        'app-ultra': '108rem',
+      },
+      spacing: {
+        'app-gutter': 'clamp(0.5rem, 1.25vw, 1.25rem)',
+        'app-gap': 'clamp(0.75rem, 1.5vw, 1.25rem)',
+      },
       colors: {
         paper: '#f4eee4',
         parchment: '#efe4d5',
@@ -23,4 +39,3 @@ export default {
   },
   plugins: [],
 }
-

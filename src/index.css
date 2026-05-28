@@ -10,15 +10,69 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Fluid layout tokens — preserve aesthetic, scale with viewport */
+  --app-max-width: min(100%, 88rem);
+  --app-panel-width: clamp(18rem, 24vw, 23.5rem);
+  --app-gutter: clamp(0.5rem, 1.25vw, 1.25rem);
+  --app-gap: clamp(0.75rem, 1.5vw, 1rem);
+  --workspace-height: auto;
+  --panel-gap: clamp(0.75rem, 1.5vw, 1rem);
+  --stage-min-height: clamp(17.5rem, 48vh, 32rem);
+  --text-display: clamp(1.5rem, 1.35rem + 1.1vw, 2rem);
+  --text-body: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
+  --text-label: clamp(0.75rem, 0.72rem + 0.15vw, 0.875rem);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --app-gap: clamp(0.625rem, 1vw, 0.875rem);
+    --panel-gap: clamp(0.5rem, 0.85vh, 0.6875rem);
+    --workspace-height: clamp(32rem, 72vh, 44rem);
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --app-max-width: min(100%, 92rem);
+    --workspace-height: clamp(34rem, 68vh, 42rem);
+  }
+}
+
+@media (min-width: 1728px) {
+  :root {
+    --app-max-width: min(100%, 96rem);
+    --workspace-height: clamp(34rem, 64vh, 40rem);
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --app-max-width: min(100%, 98rem);
+    --workspace-height: clamp(35rem, 60vh, 40rem);
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --app-max-width: min(100%, 100rem);
+    --workspace-height: clamp(36rem, 56vh, 40rem);
+  }
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.45), transparent 38%),
     linear-gradient(145deg, #f9f4ea, #ece1d2);
@@ -37,4 +91,79 @@ body::before {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+@layer components {
+  .app-shell {
+    padding: var(--app-gutter);
+    padding-left: max(var(--app-gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--app-gutter), env(safe-area-inset-right, 0px));
+    padding-bottom: max(var(--app-gutter), env(safe-area-inset-bottom, 0px));
+    min-height: 100dvh;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: max(clamp(0.75rem, 2.5vh, 2rem), env(safe-area-inset-top, 0px));
+      padding-bottom: max(clamp(0.75rem, 2.5vh, 2rem), env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  .app-layout {
+    width: 100%;
+    max-width: var(--app-max-width);
+    gap: var(--app-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    .app-layout {
+      grid-template-columns: minmax(0, 1fr) var(--app-panel-width);
+      grid-template-rows: minmax(0, 1fr);
+      height: var(--workspace-height);
+      max-height: var(--workspace-height);
+      min-height: min(32rem, 72vh);
+      align-items: stretch;
+    }
+  }
+
+  .stage-shell {
+    min-height: var(--stage-min-height);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .stage-shell {
+      min-height: 0;
+      height: 100%;
+      max-height: 100%;
+      width: 100%;
+      align-self: stretch;
+    }
+  }
+
+  .panel-shell {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .panel-shell {
+      height: 100%;
+      max-height: 100%;
+      min-height: 0;
+    }
+  }
+
+  .touch-target {
+    min-height: 2.75rem;
+  }
 }

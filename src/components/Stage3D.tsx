@@ -38,6 +38,7 @@ function FrozenImprint({ mark }: { mark: StampMark }) {
           opacity={mark.opacity}
           color={ink}
           blending={THREE.MultiplyBlending}
+          premultipliedAlpha
           roughness={0.95}
           metalness={0}
           depthWrite={false}
@@ -766,6 +767,7 @@ function SceneContent({
               transparent
               opacity={0.12}
               blending={THREE.MultiplyBlending}
+              premultipliedAlpha
               depthWrite={false}
             />
           </mesh>
@@ -789,6 +791,7 @@ function SceneContent({
               }
               color={imprintInkColor}
               blending={THREE.MultiplyBlending}
+              premultipliedAlpha
               roughness={0.95}
               metalness={0}
               depthWrite={false}
@@ -880,38 +883,100 @@ function SceneContent({
   )
 }
 
+type StageLayout = {
+  width: number
+  height: number
+}
+
+function getStageCamera(layout: StageLayout) {
+  const { width, height } = layout
+  const aspect = width / Math.max(height, 1)
+  const isSideBySide = width >= 1024
+  const isCompactHeight = height < 480
+  const isFramedDesktop = isSideBySide && height <= 720
+  const isUltrawideStage = aspect > 2.05
+  const isLandscapeStage = aspect > 1.45
+
+  const postcardAnchor: [number, number, number] = isSideBySide ? [0, 0.04, 0.08] : [0, 0.05, 0.08]
+  const orbitTarget: [number, number, number] = postcardAnchor
+
+  let cameraZ = isSideBySide ? 4.72 : 4.45
+  let cameraY = isSideBySide ? 1.7 : 1.72
+  let cameraFov = isSideBySide ? 35 : 34
+
+  if (isFramedDesktop) {
+    // Framed workspace: pull in slightly so the postcard fills the stage without excess vertical void
+    cameraZ -= 0.12
+    cameraY -= 0.02
+    cameraFov -= 0.5
+  }
+
+  if (isLandscapeStage && !isUltrawideStage) {
+    cameraZ -= 0.08
+    cameraFov -= 0.5
+  }
+
+  if (isCompactHeight) {
+    cameraZ += 0.22
+    cameraY += 0.04
+    cameraFov += 2
+  }
+
+  if (isUltrawideStage) {
+    cameraZ += 0.1
+    cameraFov -= 1
+  }
+
+  if (!isSideBySide && width < 480) {
+    cameraZ = 4.65
+    cameraFov = 35
+  }
+
+  const cameraPosition: [number, number, number] = [0, cameraY, cameraZ]
+  return { postcardAnchor, orbitTarget, cameraPosition, cameraFov }
+}
+
 export function Stage3D(props: Stage3DProps) {
-  const [viewportWidth, setViewportWidth] = useState<number>(() => {
-    if (typeof window === 'undefined') {
-      return 1280
-    }
-    return window.innerWidth
-  })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [layout, setLayout] = useState<StageLayout>(() => ({
+    width: typeof window === 'undefined' ? 1280 : window.innerWidth,
+    height: typeof window === 'undefined' ? 800 : window.innerHeight,
+  }))
 
   useEffect(() => {
-    const handleResize = () => {
-      setViewportWidth(window.innerWidth)
+    const element = containerRef.current
+    if (!element) {
+      return
     }
-    window.addEventListener('resize', handleResize)
+
+    const updateLayout = () => {
+      const rect = element.getBoundingClientRect()
+      setLayout({
+        width: Math.max(rect.width, 1),
+        height: Math.max(rect.height, 1),
+      })
+    }
+
+    updateLayout()
+    const observer = new ResizeObserver(updateLayout)
+    observer.observe(element)
+    window.addEventListener('resize', updateLayout)
+
     return () => {
-      window.removeEventListener('resize', handleResize)
+      observer.disconnect()
+      window.removeEventListener('resize', updateLayout)
     }
   }, [])
 
-  const isDesktopWide = viewportWidth >= 1280
-  const isShortDesktop = typeof window !== 'undefined' && window.innerHeight < 860
-  const postcardAnchor: [number, number, number] = isDesktopWide ? [0, 0.06, 0.08] : [0, 0.05, 0.08]
-  const orbitTarget: [number, number, number] = postcardAnchor
-  const cameraPosition: [number, number, number] = isDesktopWide
-    ? isShortDesktop
-      ? [0, 1.78, 5.05]
-      : [0, 1.74, 4.8]
-    : [0, 1.72, 4.45]
-  const cameraFov = isDesktopWide ? (isShortDesktop ? 38 : 36) : 34
+  const { postcardAnchor, orbitTarget, cameraPosition, cameraFov } = getStageCamera(layout)
 
   return (
-    <div className="h-[48vh] min-h-[300px] w-full overflow-hidden rounded-[24px] border border-[#dccdb9] bg-[#ece1d2] shadow-paper transition-[box-shadow] hover:shadow-[0_24px_44px_rgba(84,59,41,0.22)] lg:h-full lg:min-h-0">
+    <div
+      ref={containerRef}
+      className="stage-shell relative w-full min-w-0 max-w-full overflow-hidden rounded-[24px] border border-[#dccdb9] bg-[#ece1d2] shadow-paper transition-[box-shadow] hover:shadow-[0_24px_44px_rgba(84,59,41,0.22)]"
+    >
       <Canvas
+        className="!h-full !w-full"
         shadows
         gl={{ preserveDrawingBuffer: true }}
         camera={{ position: cameraPosition, fov: cameraFov }}

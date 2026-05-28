@@ -9,6 +9,7 @@ export type StylePreset = {
 }
 
 type ControlPanelProps = {
+  className?: string
   inkColor: string
   postcardColor: string
   message: string
@@ -30,6 +31,7 @@ type ControlPanelProps = {
 }
 
 export function ControlPanel({
+  className = '',
   inkColor,
   postcardColor,
   message,
@@ -62,19 +64,25 @@ export function ControlPanel({
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto rounded-[24px] border border-[#dbcab4] bg-[#f5ecdf]/90 p-4 shadow-panel backdrop-blur-sm md:p-5"
+      className={`flex min-h-0 w-full max-w-full flex-col gap-[var(--panel-gap)] overflow-y-auto overscroll-contain rounded-[24px] border border-[#dbcab4] bg-[#f5ecdf]/90 p-[clamp(0.875rem,1.5vw,1.125rem)] shadow-panel backdrop-blur-sm lg:p-4 ${className}`}
     >
-      <div className="space-y-1">
-        <h1 className="font-display text-3xl tracking-tight text-[#4d2f2a] md:text-[2rem]">
+      <div className="shrink-0 space-y-1">
+        <h1
+          className="font-display tracking-tight text-[#4d2f2a]"
+          style={{ fontSize: 'var(--text-display)' }}
+        >
           Postcard Stamp Studio
         </h1>
-        <p className="font-body text-sm text-[#765949]">
+        <p className="font-body text-[#765949]" style={{ fontSize: 'var(--text-body)' }}>
           A tactile little space for vintage postcard play.
         </p>
       </div>
 
-      <label className="block space-y-2">
-        <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+      <label className="block shrink-0 space-y-2">
+        <span
+          className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+          style={{ fontSize: 'var(--text-label)' }}
+        >
           Upload Artwork
         </span>
         <div className="rounded-2xl border border-dashed border-[#c2ac95] bg-[#fdf8f0] px-4 py-4">
@@ -82,19 +90,22 @@ export function ControlPanel({
             type="file"
             accept="image/*"
             onChange={handleFileInput}
-            className="block w-full text-sm text-[#8a6d5d] file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#e9d6c0] file:px-3 file:py-2 file:font-semibold file:text-[#5e4336] hover:file:bg-[#ddc3a6]"
+            className="block w-full min-w-0 text-sm text-[#8a6d5d] file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#e9d6c0] file:px-3 file:py-2 file:font-semibold file:text-[#5e4336] hover:file:bg-[#ddc3a6]"
           />
-          <p className="mt-2 text-xs text-[#8a6d5d]">
+          <p className="mt-2 break-words text-xs text-[#8a6d5d]">
             {stampImageName ? `Loaded: ${stampImageName}` : 'No upload yet. Using default stamp face.'}
           </p>
         </div>
       </label>
 
-      <div className="space-y-2">
-        <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+      <div className="shrink-0 space-y-2">
+        <span
+          className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+          style={{ fontSize: 'var(--text-label)' }}
+        >
           Style Moods
         </span>
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-1 laptop:grid-cols-1">
           {presets.map((preset) => {
             const isActive = preset.id === activePresetId
             return (
@@ -102,14 +113,14 @@ export function ControlPanel({
                 key={preset.id}
                 type="button"
                 onClick={() => onApplyPreset(preset.id)}
-                className={`flex items-center justify-between rounded-xl border px-3 py-2 text-left transition ${
+                className={`touch-target flex min-w-0 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition ${
                   isActive
                     ? 'border-[#8f5d4f] bg-[#e9d8c2] shadow-sm'
                     : 'border-[#d5bea6] bg-[#f9f1e5] hover:bg-[#f1e4d3]'
                 }`}
               >
-                <span className="font-display text-sm text-[#5e4336]">{preset.label}</span>
-                <span className="flex items-center gap-1.5">
+                <span className="min-w-0 truncate font-display text-sm text-[#5e4336]">{preset.label}</span>
+                <span className="flex shrink-0 items-center gap-1.5">
                   <span
                     className="h-3.5 w-3.5 rounded-full border border-[#ffffff99]"
                     style={{ backgroundColor: preset.postcardColor }}
@@ -125,33 +136,42 @@ export function ControlPanel({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="space-y-2">
-          <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+      <div className="grid shrink-0 grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-1 laptop:grid-cols-2">
+        <label className="min-w-0 space-y-2">
+          <span
+            className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+            style={{ fontSize: 'var(--text-label)' }}
+          >
             Ink Color
           </span>
           <input
             type="color"
             value={inkColor}
             onChange={(event) => onInkColorChange(event.target.value)}
-            className="h-11 w-full cursor-pointer rounded-xl border border-[#ccb49c] bg-[#f7efe4] p-1"
+            className="touch-target h-11 w-full max-w-full cursor-pointer rounded-xl border border-[#ccb49c] bg-[#f7efe4] p-1"
           />
         </label>
-        <label className="space-y-2">
-          <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+        <label className="min-w-0 space-y-2">
+          <span
+            className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+            style={{ fontSize: 'var(--text-label)' }}
+          >
             Card Color
           </span>
           <input
             type="color"
             value={postcardColor}
             onChange={(event) => onPostcardColorChange(event.target.value)}
-            className="h-11 w-full cursor-pointer rounded-xl border border-[#ccb49c] bg-[#f7efe4] p-1"
+            className="touch-target h-11 w-full max-w-full cursor-pointer rounded-xl border border-[#ccb49c] bg-[#f7efe4] p-1"
           />
         </label>
       </div>
 
-      <label className="block space-y-2">
-        <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+      <label className="block shrink-0 space-y-2">
+        <span
+          className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+          style={{ fontSize: 'var(--text-label)' }}
+        >
           Stamp Size
         </span>
         <div className="rounded-2xl border border-[#d5bea6] bg-[#f9f1e5] px-3 py-3">
@@ -162,7 +182,7 @@ export function ControlPanel({
             step={0.01}
             value={stampScale}
             onChange={(event) => onStampScaleChange(Number(event.target.value))}
-            className="w-full accent-[#8f5d4f]"
+            className="w-full max-w-full accent-[#8f5d4f]"
           />
           <div className="mt-1 text-right font-display text-xs text-[#7b5f50]">
             {Math.round(stampScale * 100)}%
@@ -170,27 +190,31 @@ export function ControlPanel({
         </div>
       </label>
 
-      <label className="block space-y-2">
-        <span className="font-display text-sm uppercase tracking-[0.14em] text-[#7b5f50]">
+      <label className="block min-h-0 shrink space-y-2">
+        <span
+          className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+          style={{ fontSize: 'var(--text-label)' }}
+        >
           Postcard Message
         </span>
         <textarea
           value={message}
           onChange={(event) => onMessageChange(event.target.value)}
-          rows={5}
+          rows={4}
           placeholder="Wish you were here..."
-          className="w-full resize-none rounded-2xl border border-[#d1bca6] bg-[#fffaf2] p-3 font-body text-sm text-[#4d2f2a] shadow-inner outline-none transition focus:border-[#b98769] focus:ring-2 focus:ring-[#e9d4be]"
+          className="w-full max-w-full resize-y rounded-2xl border border-[#d1bca6] bg-[#fffaf2] p-3 font-body text-sm text-[#4d2f2a] shadow-inner outline-none transition focus:border-[#b98769] focus:ring-2 focus:ring-[#e9d4be] min-[1024px]:resize-none"
+          style={{ minHeight: 'clamp(4.5rem, 10vh, 6rem)' }}
         />
       </label>
 
-      <div className="mt-auto flex flex-col gap-2">
+      <div className="mt-auto flex shrink-0 flex-col gap-2 pt-1">
         <div className="grid grid-cols-2 gap-2">
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
             onClick={onUndo}
             disabled={!canUndo}
-            className="rounded-xl border border-[#b89a82] bg-[#f3e6d6] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e8d4c0] disabled:cursor-not-allowed disabled:opacity-50"
+            className="touch-target rounded-xl border border-[#b89a82] bg-[#f3e6d6] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e8d4c0] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Undo
           </motion.button>
@@ -198,7 +222,7 @@ export function ControlPanel({
             type="button"
             whileTap={{ scale: 0.98 }}
             onClick={onClear}
-            className="rounded-xl border border-[#c9af98] bg-[#efe1cf] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e6d4bf]"
+            className="touch-target rounded-xl border border-[#c9af98] bg-[#efe1cf] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e6d4bf]"
           >
             Clear
           </motion.button>
@@ -208,7 +232,7 @@ export function ControlPanel({
           whileTap={{ scale: 0.98 }}
           onClick={onDownload}
           disabled={isDownloading}
-          className="w-full rounded-xl border border-[#8f5d4f] bg-[#9e6452] px-4 py-2 text-sm font-semibold text-[#fdf2e9] transition hover:bg-[#8f5d4f] disabled:cursor-not-allowed disabled:opacity-70"
+          className="touch-target w-full rounded-xl border border-[#8f5d4f] bg-[#9e6452] px-4 py-2.5 text-sm font-semibold text-[#fdf2e9] transition hover:bg-[#8f5d4f] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isDownloading ? 'Preparing...' : 'Download PNG'}
         </motion.button>

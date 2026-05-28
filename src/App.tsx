@@ -167,8 +167,8 @@ function App() {
   }
 
   return (
-    <main className="h-dvh overflow-hidden p-2 md:p-3">
-      <section className="mx-auto grid h-full w-full max-w-[1500px] grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_390px] lg:gap-4">
+    <main className="app-shell overflow-x-hidden overflow-y-auto">
+      <section className="app-layout mx-auto grid auto-rows-auto">
         <Stage3D
           postcardColor={postcardColor}
           inkColor={inkColor}
@@ -185,6 +185,7 @@ function App() {
         />
 
         <ControlPanel
+          className="panel-shell"
           inkColor={inkColor}
           postcardColor={postcardColor}
           message={message}
