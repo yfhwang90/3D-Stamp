@@ -64,7 +64,7 @@ export function ControlPanel({
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className={`flex min-h-0 w-full max-w-full flex-col gap-[var(--panel-gap)] overflow-y-auto overscroll-contain rounded-[24px] border border-[#dbcab4] bg-[#f5ecdf]/90 p-[clamp(0.875rem,1.5vw,1.125rem)] shadow-panel backdrop-blur-sm lg:p-4 ${className}`}
+      className={`flex h-full min-h-0 w-full max-w-full flex-col gap-[var(--panel-gap)] overflow-x-hidden overflow-y-auto overscroll-contain rounded-[24px] border border-[#dbcab4] bg-[#f5ecdf]/90 p-[clamp(0.875rem,1.5vw,1.125rem)] shadow-panel backdrop-blur-sm lg:p-4 ${className}`}
     >
       <div className="shrink-0 space-y-1">
         <h1
@@ -136,7 +136,7 @@ export function ControlPanel({
         </div>
       </div>
 
-      <div className="grid shrink-0 grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-1 laptop:grid-cols-2">
+      <div className="grid shrink-0 grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-2 lg:gap-2">
         <label className="min-w-0 space-y-2">
           <span
             className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
@@ -190,52 +190,53 @@ export function ControlPanel({
         </div>
       </label>
 
-      <label className="block min-h-0 shrink space-y-2">
-        <span
-          className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
-          style={{ fontSize: 'var(--text-label)' }}
-        >
-          Postcard Message
-        </span>
-        <textarea
-          value={message}
-          onChange={(event) => onMessageChange(event.target.value)}
-          rows={4}
-          placeholder="Wish you were here..."
-          className="w-full max-w-full resize-y rounded-2xl border border-[#d1bca6] bg-[#fffaf2] p-3 font-body text-sm text-[#4d2f2a] shadow-inner outline-none transition focus:border-[#b98769] focus:ring-2 focus:ring-[#e9d4be] min-[1024px]:resize-none"
-          style={{ minHeight: 'clamp(4.5rem, 10vh, 6rem)' }}
-        />
-      </label>
+      <div className="flex shrink-0 flex-col gap-2">
+        <label className="block space-y-2">
+          <span
+            className="font-display uppercase tracking-[0.14em] text-[#7b5f50]"
+            style={{ fontSize: 'var(--text-label)' }}
+          >
+            Postcard Message
+          </span>
+          <textarea
+            value={message}
+            onChange={(event) => onMessageChange(event.target.value)}
+            rows={3}
+            placeholder="Wish you were here..."
+            className="block w-full max-w-full resize-none rounded-2xl border border-[#d1bca6] bg-[#fffaf2] p-3 font-body text-sm leading-relaxed text-[#4d2f2a] shadow-inner outline-none transition focus:border-[#b98769] focus:ring-2 focus:ring-[#e9d4be]"
+          />
+        </label>
 
-      <div className="mt-auto flex shrink-0 flex-col gap-2 pt-1">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col gap-2 pt-0.5">
+          <div className="grid grid-cols-2 gap-2">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.98 }}
+              onClick={onUndo}
+              disabled={!canUndo}
+              className="touch-target rounded-xl border border-[#b89a82] bg-[#f3e6d6] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e8d4c0] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Undo
+            </motion.button>
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.98 }}
+              onClick={onClear}
+              className="touch-target rounded-xl border border-[#c9af98] bg-[#efe1cf] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e6d4bf]"
+            >
+              Clear
+            </motion.button>
+          </div>
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
-            onClick={onUndo}
-            disabled={!canUndo}
-            className="touch-target rounded-xl border border-[#b89a82] bg-[#f3e6d6] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e8d4c0] disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={onDownload}
+            disabled={isDownloading}
+            className="touch-target w-full rounded-xl border border-[#8f5d4f] bg-[#9e6452] px-4 py-2.5 text-sm font-semibold text-[#fdf2e9] transition hover:bg-[#8f5d4f] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Undo
-          </motion.button>
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={onClear}
-            className="touch-target rounded-xl border border-[#c9af98] bg-[#efe1cf] px-3 py-2 text-sm font-semibold text-[#5d4235] transition hover:bg-[#e6d4bf]"
-          >
-            Clear
+            {isDownloading ? 'Preparing...' : 'Download PNG'}
           </motion.button>
         </div>
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.98 }}
-          onClick={onDownload}
-          disabled={isDownloading}
-          className="touch-target w-full rounded-xl border border-[#8f5d4f] bg-[#9e6452] px-4 py-2.5 text-sm font-semibold text-[#fdf2e9] transition hover:bg-[#8f5d4f] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isDownloading ? 'Preparing...' : 'Download PNG'}
-        </motion.button>
       </div>
     </motion.aside>
   )
